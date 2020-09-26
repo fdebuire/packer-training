@@ -1,0 +1,42 @@
+{
+  "description": "This is a test ami with ansible",
+  "variables": {
+    "Name": "fdebuire ansible ami",
+    "AwsAccount": "{{env `AWS_ACCOUNT`}}"
+  },
+  "builders": [
+    {
+      "region": "eu-west-2",
+      "type": "amazon-ebs",
+      "source_ami": "ami-0eb89db7593b5d434",
+      "ami_description": "This is a test ami with ansible",
+      "ami_users": [
+        "{{user `AwsAccount`}}"
+      ],
+      "run_tags": {
+        "Name": "{{user `Name`}}"
+      },
+      "run_volume_tags": {
+        "Name": "{{user `Name`}}"
+      },
+      "tags": {
+        "Name": "{{user `Name`}}"
+      },
+      "temporary_key_pair_name": "fdebuire_packer",
+      "instance_type": "t2.micro",
+      "ssh_username": "ubuntu",
+      "ami_name": "fdebuire-ansible-{{timestamp}}"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "/tmp/.ssh/ansible.pem",
+      "destination": "~/.ssh/id_rsa"
+    },
+    {
+      "type": "shell",
+      "script": "scripts/install_ansible.sh"
+    }
+  ]
+}
